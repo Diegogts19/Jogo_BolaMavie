@@ -8,7 +8,7 @@ from os import path
 
 import pygame
 
-from config import PASTA_FONTE, PIXEL, WIDTH, HEIGHT
+from config import PASTA_SND, PASTA_FONTE, PIXEL, WIDTH, HEIGHT
 import pixel_art
 
 
@@ -68,6 +68,25 @@ def carrega_fonte(tamanho):
     return pygame.font.Font(None, int(tamanho * 1.8))
 
 
+class SomMudo:
+    """Usado no lugar de um som quando o áudio não funciona no computador."""
+    def play(self):
+        """Não toca nada."""
+        pass
+
+    def stop(self):
+        """Não há nada para parar."""
+        pass
+
+
+def carrega_som(nome):
+    """Carrega um .wav da pasta de sons; se o áudio falhar, devolve um SomMudo."""
+    try:
+        return pygame.mixer.Sound(path.join(PASTA_SND, nome))
+    except pygame.error:
+        return SomMudo()
+
+
 def carrega_imagens_do_jogo(assets):
     """Campo, goleiro, bola e mira (tela da cobrança)."""
     assets['fundo_campo'] = cria_fundo_campo()
@@ -85,9 +104,16 @@ def carrega_fontes(assets):
     assets['fonte_pequena'] = carrega_fonte(11)
 
 
+def carrega_sons(assets):
+    """Carrega todos os efeitos sonoros e os áudios da equipe."""
+    for nome in ['chute', 'apito', 'gol', 'defesa', 'bonk', 'trave', 'aminu', 'bolada_mavie']:
+        assets[nome] = carrega_som(nome + '.wav')
+
+
 def load_assets():
     """Guarda tudo num dicionário. Cada função acima carrega uma parte."""
     assets = {}
     carrega_imagens_do_jogo(assets)
     carrega_fontes(assets)
+    carrega_sons(assets)
     return assets
