@@ -117,3 +117,4 @@ def load_assets():
     carrega_fontes(assets)
     carrega_sons(assets)
     return assets
+
