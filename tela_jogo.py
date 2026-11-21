@@ -1,10 +1,11 @@
 """Tela da cobrança do pênalti (o loop principal do jogo)."""
 import pygame
 
-from config import (FPS, WIDTH, QUIT, INIT, GAME, GOL_ESQ, GOL_DIR, GOL_TOPO, BRANCO, AMARELO, VERMELHO,
-                    VELOCIDADE_BARRA_INICIAL, QUALIDADE_MINIMA_INICIAL)
+from config import (FPS, WIDTH, QUIT, INIT, GAME, GOL, MAVIE, GOL_ESQ, GOL_DIR, GOL_TOPO,
+                    BRANCO, AMARELO, VERMELHO)
+from dados import salva_dados, muda_felicidade, ganho_por_gol, nivel, velocidade_da_barra, qualidade_minima
 from sprites import Mira, Goleiro, Batedor, Bola, BarraQualidade
-from utils import desenha_texto, alterna_tela_cheia
+from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia
 
 MIRANDO_LADO = 0
 MIRANDO_ALTURA = 1
@@ -32,16 +33,16 @@ def bola_na_trave(alvo):
     return trave_esquerda or trave_direita or travessao
 
 
-def game_screen(window, assets):
+def game_screen(window, assets, dados):
     """Uma cobrança de pênalti. Devolve GOL, MAVIE, GAME, INIT, REINICIAR ou QUIT."""
     clock = pygame.time.Clock()
 
     all_sprites = pygame.sprite.Group()
-    goleiro = Goleiro(assets['goleiro'], 0)
+    goleiro = Goleiro(assets['goleiro'], nivel(dados))
     batedor = Batedor(assets['batedor'])
     bola = Bola(assets['bola'])
     mira = Mira(assets['mira'])
-    barra = BarraQualidade(60, 75, VELOCIDADE_BARRA_INICIAL, QUALIDADE_MINIMA_INICIAL)
+    barra = BarraQualidade(60, 75, velocidade_da_barra(dados), qualidade_minima(dados))
     all_sprites.add(goleiro)
     all_sprites.add(batedor)
     all_sprites.add(bola)
@@ -111,7 +112,23 @@ def game_screen(window, assets):
                 inicio_fim = pygame.time.get_ticks()
 
         if estado == FIM and pygame.time.get_ticks() - inicio_fim > 1500:
-            return GAME
+            ganho = ganho_por_gol(dados)
+            if resultado == 'GOL':
+                dados['gols'] += 1
+                muda_felicidade(dados, ganho)
+                proxima_tela = GOL
+            elif resultado == 'FORA':
+                dados['erros'] += 1
+                muda_felicidade(dados, -ganho)
+                proxima_tela = MAVIE
+            elif resultado == 'TRAVE':
+                dados['traves'] += 1
+                proxima_tela = GAME
+            else:
+                dados['defesas'] += 1
+                proxima_tela = GAME
+            salva_dados(dados)
+            return proxima_tela
 
         window.blit(assets['fundo_campo'], (0, 0))
         all_sprites.draw(window)
@@ -139,4 +156,7 @@ def game_screen(window, assets):
                 desenha_texto(window, 'FORA!', assets['fonte_titulo'], VERMELHO, (WIDTH / 2, 165))
         desenha_texto(window, 'ESC: MENU', assets['fonte_pequena'], BRANCO, (97, 532))
 
+        desenha_felicidade(window, assets, dados)
+
         pygame.display.update()
+
