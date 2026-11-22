@@ -8,6 +8,7 @@ from os import path
 
 import pygame
 
+from skins import SKINS
 from config import PASTA_SND, PASTA_FONTE, PIXEL, WIDTH, HEIGHT
 import pixel_art
 
@@ -29,6 +30,37 @@ def cria_imagem(mapa, escala, paleta=pixel_art.PALETA):
 def mavie_com_expressao(nome):
     """Monta o rosto da Mavie trocando as linhas 14 a 25 pela expressão."""
     return pixel_art.MAVIE_BASE[:14] + pixel_art.MAVIE_EXPRESSOES[nome] + pixel_art.MAVIE_BASE[26:]
+
+
+def paleta_da_skin(skin):
+    """Copia a paleta padrão e troca as cores que a skin define."""
+    paleta = dict(pixel_art.PALETA)
+    for letra in skin['cores']:
+        paleta[letra] = skin['cores'][letra]
+    return paleta
+
+
+def paleta_silhueta():
+    """Paleta em que todas as letras viram a mesma cor escura (skin trancada)."""
+    paleta = {}
+    for letra in pixel_art.PALETA:
+        paleta[letra] = (15, 15, 25)
+    return paleta
+
+
+def busto(estilo_cabelo):
+    """Desenha o cabelo por cima das 10 primeiras linhas do rosto."""
+    linhas = list(pixel_art.BUSTO_BASE)
+    cabelo = pixel_art.BUSTO_CABELOS[estilo_cabelo]
+    for y in range(len(cabelo)):
+        nova = ''
+        for x in range(len(cabelo[y])):
+            if cabelo[y][x] == '.':
+                nova += linhas[y][x]
+            else:
+                nova += cabelo[y][x]
+        linhas[y] = nova
+    return linhas
 
 
 def cria_fundo_campo():
@@ -126,7 +158,6 @@ def carrega_imagens_do_jogo(assets):
     assets['goleiro'] = cria_imagem(pixel_art.GOLEIRO, PIXEL)
     assets['bola'] = cria_imagem(pixel_art.BOLA, PIXEL)
     assets['mira'] = cria_imagem(pixel_art.MIRA, 4)
-    assets['batedor'] = cria_imagem(pixel_art.BATEDOR_CABELOS['curto'] + pixel_art.BATEDOR_CORPO, PIXEL + 1)
 
 
 def carrega_fontes(assets):
@@ -161,6 +192,22 @@ def carrega_comemoracao(assets):
     assets['craque'] = cria_imagem(pixel_art.CRAQUE, 7)
 
 
+def carrega_skins(assets):
+    """Uma lista de imagens para cada uso (mesma ordem da lista SKINS)."""
+    assets['batedores'] = []
+    assets['bustos'] = []
+    assets['bustos_mini'] = []
+    assets['bustos_trancados'] = []
+    for skin in SKINS:
+        paleta = paleta_da_skin(skin)
+        costas = pixel_art.BATEDOR_CABELOS[skin['cabelo']] + pixel_art.BATEDOR_CORPO
+        frente = busto(skin['cabelo'])
+        assets['batedores'].append(cria_imagem(costas, PIXEL + 1, paleta))
+        assets['bustos'].append(cria_imagem(frente, 7, paleta))
+        assets['bustos_mini'].append(cria_imagem(frente, 2, paleta))
+        assets['bustos_trancados'].append(cria_imagem(frente, 2, paleta_silhueta()))
+
+
 def load_assets():
     """Guarda tudo num dicionário. Cada função acima carrega uma parte."""
     assets = {}
@@ -169,6 +216,5 @@ def load_assets():
     carrega_sons(assets)
     carrega_mavie(assets)
     carrega_comemoracao(assets)
+    carrega_skins(assets)
     return assets
-
-
