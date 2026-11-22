@@ -1,4 +1,3 @@
-
 """Classes dos sprites do jogo (igual ao sprites.py do handout)."""
 import math
 import random
@@ -283,4 +282,6 @@ class BarraQualidade:
         x = self.rect.x + int(self.posicao)
         pygame.draw.rect(window, (0, 0, 0), (x - 5, self.rect.y - 12, 10, self.rect.height + 24))
         pygame.draw.rect(window, (255, 255, 255), (x - 3, self.rect.y - 10, 6, self.rect.height + 20))
+
+
 
