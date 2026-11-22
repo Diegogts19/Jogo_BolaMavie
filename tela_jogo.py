@@ -39,7 +39,7 @@ def game_screen(window, assets, dados):
 
     all_sprites = pygame.sprite.Group()
     goleiro = Goleiro(assets['goleiro'], nivel(dados))
-    batedor = Batedor(assets['batedor'])
+    batedor = Batedor(assets['batedores'][dados['skin_atual']])
     bola = Bola(assets['bola'])
     mira = Mira(assets['mira'])
     barra = BarraQualidade(60, 75, velocidade_da_barra(dados), qualidade_minima(dados))
@@ -159,4 +159,3 @@ def game_screen(window, assets, dados):
         desenha_felicidade(window, assets, dados)
 
         pygame.display.update()
-
