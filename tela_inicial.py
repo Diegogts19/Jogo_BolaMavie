@@ -1,11 +1,11 @@
-"""Tela inicial: título e instruções."""
+"""Tela inicial: título, placar e felicidade da Mavie."""
 import pygame
 
 from config import FPS, WIDTH, HEIGHT, QUIT, GAME, BRANCO, AMARELO, VERDE
-from utils import desenha_texto, alterna_tela_cheia
+from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia
 
 
-def init_screen(window, assets):
+def init_screen(window, assets, dados):
     """Menu: escolher skin, ver placar e felicidade. Devolve GAME, REINICIAR ou QUIT."""
     clock = pygame.time.Clock()
 
@@ -36,6 +36,11 @@ def init_screen(window, assets):
             desenha_texto(window, 'APERTE ESPAÇO PARA BATER', assets['fonte_media'], BRANCO, (WIDTH / 2, 510))
 
         fonte = assets['fonte_pequena']
+        desenha_texto(window, f"GOLS: {dados['gols']}  NA MAVIE: {dados['erros']}  DEFESAS: {dados['defesas']}  TRAVES: {dados['traves']}",
+                      fonte, BRANCO, (WIDTH / 2, 545))
         desenha_texto(window, 'F: TELA CHEIA   ESC: SAIR', fonte, BRANCO, (WIDTH / 2, 575))
 
+        desenha_felicidade(window, assets, dados)
+
         pygame.display.update()
+
