@@ -69,3 +69,20 @@ def alterna_tela_cheia(event):
     """Tecla F liga/desliga a tela cheia (chamada no for de eventos de cada tela)."""
     if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
         pygame.display.toggle_fullscreen()
+
+
+def desenha_botao(superficie, assets, texto, rect):
+    """Desenha um botão. Fica amarelo quando o mouse está em cima."""
+    rect = pygame.Rect(rect)
+    mouse_em_cima = rect.collidepoint(pygame.mouse.get_pos())
+    cor_fundo = AMARELO if mouse_em_cima else PRETO
+    cor_texto = PRETO if mouse_em_cima else BRANCO
+    pygame.draw.rect(superficie, cor_fundo, rect)
+    pygame.draw.rect(superficie, BRANCO, rect, 3)
+    desenha_texto(superficie, texto, assets['fonte_pequena'], cor_texto, rect.center, None)
+
+
+def clicou_no_botao(event, rect):
+    """True se o evento é um clique com o botão esquerdo dentro do retângulo."""
+    return (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1
+            and pygame.Rect(rect).collidepoint(event.pos))
