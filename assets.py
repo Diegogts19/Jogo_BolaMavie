@@ -26,6 +26,11 @@ def cria_imagem(mapa, escala, paleta=pixel_art.PALETA):
     return pygame.transform.scale(imagem, (largura * escala, altura * escala))
 
 
+def mavie_com_expressao(nome):
+    """Monta o rosto da Mavie trocando as linhas 14 a 25 pela expressão."""
+    return pixel_art.MAVIE_BASE[:14] + pixel_art.MAVIE_EXPRESSOES[nome] + pixel_art.MAVIE_BASE[26:]
+
+
 def cria_fundo_campo():
     """Desenha o estádio numa tela pequena (160 x 120) e depois amplia."""
     fundo = pygame.Surface((WIDTH // PIXEL, HEIGHT // PIXEL))
@@ -57,6 +62,34 @@ def cria_fundo_campo():
     pygame.draw.rect(fundo, branco, (42, 34, 3, 39))
     pygame.draw.rect(fundo, branco, (116, 34, 3, 39))
     pygame.draw.rect(fundo, branco, (42, 34, 77, 3))
+    return pygame.transform.scale(fundo, (WIDTH, HEIGHT))
+
+
+def cria_fundo_mavie():
+    """Céu com sol e nuvens para a cena da Mavie."""
+    fundo = pygame.Surface((WIDTH // PIXEL, HEIGHT // PIXEL))
+    fundo.fill((150, 210, 250))
+    pygame.draw.circle(fundo, (255, 230, 90), (135, 20), 10)
+    for x, y in [(20, 18), (60, 10), (100, 30)]:
+        pygame.draw.ellipse(fundo, (255, 255, 255), (x, y, 24, 8))
+        pygame.draw.ellipse(fundo, (255, 255, 255), (x + 6, y - 4, 12, 8))
+    pygame.draw.rect(fundo, (70, 180, 80), (0, 95, 160, 25))
+    for x in range(4, 160, 12):
+        pygame.draw.rect(fundo, (255, 255, 255), (x, 100 + (x % 3) * 4, 2, 2))
+    return pygame.transform.scale(fundo, (WIDTH, HEIGHT))
+
+
+def cria_fundo_gol():
+    """Fundo azul 'texturizado' para a comemoração do gol."""
+    fundo = pygame.Surface((WIDTH // PIXEL, HEIGHT // PIXEL))
+    fundo.fill((70, 150, 200))
+    random.seed(5)
+    for i in range(900):
+        x = random.randint(0, 159)
+        y = random.randint(0, 119)
+        cor = random.choice([(55, 130, 185), (90, 170, 215), (60, 140, 190)])
+        fundo.set_at((x, y), cor)
+    random.seed()
     return pygame.transform.scale(fundo, (WIDTH, HEIGHT))
 
 
@@ -110,11 +143,32 @@ def carrega_sons(assets):
         assets[nome] = carrega_som(nome + '.wav')
 
 
+def carrega_mavie(assets):
+    """Rosto da Mavie: um dicionário com uma imagem para cada expressão."""
+    assets['fundo_mavie'] = cria_fundo_mavie()
+    assets['estrela'] = cria_imagem(pixel_art.ESTRELA, 5)
+    assets['mavie'] = {}
+    assets['mavie_mini'] = {}
+    for nome in pixel_art.MAVIE_EXPRESSOES:
+        mapa = mavie_com_expressao(nome)
+        assets['mavie'][nome] = cria_imagem(mapa, 10)
+        assets['mavie_mini'][nome] = cria_imagem(mapa, 2)
+
+
+def carrega_comemoracao(assets):
+    """Craque do 'AMINU!' e o fundo azul da comemoração."""
+    assets['fundo_gol'] = cria_fundo_gol()
+    assets['craque'] = cria_imagem(pixel_art.CRAQUE, 7)
+
+
 def load_assets():
     """Guarda tudo num dicionário. Cada função acima carrega uma parte."""
     assets = {}
     carrega_imagens_do_jogo(assets)
     carrega_fontes(assets)
     carrega_sons(assets)
+    carrega_mavie(assets)
+    carrega_comemoracao(assets)
     return assets
+
 
