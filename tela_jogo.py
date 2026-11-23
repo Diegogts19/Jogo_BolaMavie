@@ -1,11 +1,11 @@
 """Tela da cobrança do pênalti (o loop principal do jogo)."""
 import pygame
 
-from config import (FPS, WIDTH, QUIT, INIT, GAME, GOL, MAVIE, GOL_ESQ, GOL_DIR, GOL_TOPO,
+from config import (FPS, WIDTH, QUIT, INIT, GAME, GOL, MAVIE, REINICIAR, BOTAO_REINICIAR, GOL_ESQ, GOL_DIR, GOL_TOPO,
                     BRANCO, AMARELO, VERMELHO)
 from dados import salva_dados, muda_felicidade, ganho_por_gol, nivel, velocidade_da_barra, qualidade_minima
 from sprites import Mira, Goleiro, Batedor, Bola, BarraQualidade
-from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia
+from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia, desenha_botao, clicou_no_botao
 
 MIRANDO_LADO = 0
 MIRANDO_ALTURA = 1
@@ -61,9 +61,13 @@ def game_screen(window, assets, dados):
             alterna_tela_cheia(event)
             if event.type == pygame.QUIT:
                 return QUIT
+            if clicou_no_botao(event, BOTAO_REINICIAR):
+                return REINICIAR
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return INIT
+                if event.key == pygame.K_r:
+                    return REINICIAR
                 if event.key == pygame.K_SPACE:
                     if estado == MIRANDO_LADO:
                         mira.trava_lado()
@@ -155,6 +159,7 @@ def game_screen(window, assets, dados):
             else:
                 desenha_texto(window, 'FORA!', assets['fonte_titulo'], VERMELHO, (WIDTH / 2, 165))
         desenha_texto(window, 'ESC: MENU', assets['fonte_pequena'], BRANCO, (97, 532))
+        desenha_botao(window, assets, 'REINICIAR (R)', BOTAO_REINICIAR)
 
         desenha_felicidade(window, assets, dados)
 
