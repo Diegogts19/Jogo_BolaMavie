@@ -208,6 +208,11 @@ def carrega_skins(assets):
         assets['bustos_trancados'].append(cria_imagem(frente, 2, paleta_silhueta()))
 
 
+def carrega_cena_final(assets):
+    """Cena final: usa a paleta da skin Copa 2014 (posição 6 da lista SKINS)."""
+    assets['cena_final'] = cria_imagem(pixel_art.CENA_FINAL, 7, paleta_da_skin(SKINS[6]))
+
+
 def load_assets():
     """Guarda tudo num dicionário. Cada função acima carrega uma parte."""
     assets = {}
@@ -217,4 +222,6 @@ def load_assets():
     carrega_mavie(assets)
     carrega_comemoracao(assets)
     carrega_skins(assets)
+    carrega_cena_final(assets)
     return assets
+
