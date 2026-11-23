@@ -1,0 +1,7 @@
+felicidade=25
+gols=5
+erros=2
+defesas=2
+traves=0
+skins_liberadas=4
+skin_atual=3
