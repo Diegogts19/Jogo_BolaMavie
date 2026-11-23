@@ -1,10 +1,10 @@
 """Tela inicial: escolha do personagem (skin), placar e felicidade da Mavie."""
 import pygame
 
-from config import FPS, WIDTH, HEIGHT, QUIT, GAME, BRANCO, AMARELO, VERDE, CINZA
+from config import FPS, WIDTH, HEIGHT, QUIT, GAME, REINICIAR, BOTAO_REINICIAR, BRANCO, AMARELO, VERDE, CINZA
 from dados import salva_dados
 from skins import SKINS
-from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia
+from utils import desenha_texto, desenha_felicidade, alterna_tela_cheia, desenha_botao, clicou_no_botao
 
 
 def desenha_lista_de_skins(window, assets, dados):
@@ -42,6 +42,8 @@ def init_screen(window, assets, dados):
             alterna_tela_cheia(event)
             if event.type == pygame.QUIT:
                 return QUIT
+            if clicou_no_botao(event, BOTAO_REINICIAR):
+                return REINICIAR
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     return GAME
@@ -53,6 +55,8 @@ def init_screen(window, assets, dados):
                 if event.key == pygame.K_LEFT:
                     dados['skin_atual'] = (dados['skin_atual'] - 1) % dados['skins_liberadas']
                     salva_dados(dados)
+                if event.key == pygame.K_r:
+                    return REINICIAR
 
         window.blit(assets['fundo_campo'], (0, 0))
         window.blit(escuro, (0, 0))
@@ -83,5 +87,6 @@ def init_screen(window, assets, dados):
         desenha_texto(window, '< > SKIN   F: TELA CHEIA   ESC: SAIR', fonte, BRANCO, (WIDTH / 2, 575))
 
         desenha_felicidade(window, assets, dados)
+        desenha_botao(window, assets, 'REINICIAR (R)', BOTAO_REINICIAR)
 
         pygame.display.update()
