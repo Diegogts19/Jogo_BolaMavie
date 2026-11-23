@@ -143,12 +143,10 @@ class SomMudo:
         """Não há nada para parar."""
         pass
 
-
 def carrega_som(nome):
-    """Carrega um .wav da pasta de sons; se o áudio falhar, devolve um SomMudo."""
     try:
         return pygame.mixer.Sound(path.join(PASTA_SND, nome))
-    except pygame.error:
+    except (pygame.error, FileNotFoundError):
         return SomMudo()
 
 
