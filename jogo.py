@@ -7,14 +7,16 @@ Para rodar:  python jogo.py
 """
 import pygame
 
-from config import WIDTH, HEIGHT, TITULO, QUIT, INIT, GAME, GOL, MAVIE, NOVA_SKIN
+from config import WIDTH, HEIGHT, TITULO, QUIT, INIT, GAME, GOL, MAVIE, NOVA_SKIN, FINAL, REINICIAR
 from assets import load_assets
-from dados import carrega_dados, verifica_nova_skin
+from dados import carrega_dados, verifica_nova_skin, zerou_o_jogo
 from tela_inicial import init_screen
 from tela_jogo import game_screen
 from tela_gol import gol_screen
 from tela_mavie import mavie_screen
 from tela_skin import nova_skin_screen
+from tela_final import final_screen
+from tela_reiniciar import reiniciar_screen
 
 pygame.init()
 try:
@@ -42,6 +44,11 @@ while state != QUIT:
         state = mavie_screen(window, assets, dados)
     elif state == NOVA_SKIN:
         state = nova_skin_screen(window, assets, dados['skin_atual'])
+        if state != QUIT and zerou_o_jogo(dados):
+            state = FINAL
+    elif state == FINAL:
+        state = final_screen(window, assets)
+    elif state == REINICIAR:
+        state = reiniciar_screen(window, assets, dados)
 
 pygame.quit()
-
